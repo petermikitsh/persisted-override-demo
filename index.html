@@ -49,7 +49,11 @@
         const imoLocalStorage = JSON.parse(imoLocalStorageRaw);
         const overrides = Object.entries(imoLocalStorage.imports);
         overrides.forEach(([key, value]) => {
-          window.localStorage.setItem(`import-map-override:${key}`, value);
+          const { hostname } = new URL(value);
+          /* 🚨 Only permit overrides from trusted hostnames 🚨 */
+          if (hostname === "localhost" || hostname === "petermikitsh.github.io") {
+            window.localStorage.setItem(`import-map-override:${key}`, value);
+          }
         });
         const newLocation = new URL(document.location.href);
         search.delete('imoLocalStorage');

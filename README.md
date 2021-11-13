@@ -22,3 +22,9 @@ Pre-requisites:
 ### With Override
 
 <img height="300" src="./with_override.png">
+
+### Local Development
+
+```
+npx http-server .
+```
