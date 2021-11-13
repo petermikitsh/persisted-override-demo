@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Persisted Override Demo</title>
+  <meta name="importmap-type" content="systemjs-importmap">
+</head>
+
+<body>
+  <!-- Example: visit this url:
+
+    http://0.0.0.0:8080/?imoLocalStorage={"imports":{"react":"https://unpkg.com/@esm-bundle/react@17/system/react.development.js","react-dom":"https://unpkg.com/@esm-bundle/react-dom@17/system/react-dom.development.js"}}
+
+    Encoded:
+
+    http://0.0.0.0:8080/?imoLocalStorage=%7B%22imports%22%3A%7B%22react%22%3A%22https%3A%2F%2Funpkg.com%2F%40esm-bundle%2Freact%4017%2Fsystem%2Freact.development.js%22%2C%22react-dom%22%3A%22https%3A%2F%2Funpkg.com%2F%40esm-bundle%2Freact-dom%4017%2Fsystem%2Freact-dom.development.js%22%7D%7D
+  
+  -->
+  <div>
+    <p>
+      <a
+        href="?imoLocalStorage=%7B%22imports%22%3A%7B%22react%22%3A%22https%3A%2F%2Funpkg.com%2F%40esm-bundle%2Freact%4017%2Fsystem%2Freact.development.js%22%2C%22react-dom%22%3A%22https%3A%2F%2Funpkg.com%2F%40esm-bundle%2Freact-dom%4017%2Fsystem%2Freact-dom.development.js%22%7D%7D">
+        Override to React 17
+      </a>
+    </p>
+  </div>
+  <div id="mount"></div>
+  <script type="systemjs-importmap">
+    {
+      "imports": {
+        "react": "https://unpkg.com/@esm-bundle/react@16/system/react.development.js",
+        "react-dom": "https://unpkg.com/@esm-bundle/react-dom@17/system/react-dom.development.js"
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/import-map-overrides@2.2.0/dist/import-map-overrides.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/systemjs@6.8.3/dist/system.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/systemjs@6.8.3/dist/extras/amd.min.js"></script>
+  <script>
+    (async () => {
+      const search = new URLSearchParams(window.location.search);
+      const imoLocalStorageRaw = search.get('imoLocalStorage');
+      if (imoLocalStorageRaw) {
+        const imoLocalStorage = JSON.parse(imoLocalStorageRaw);
+        const overrides = Object.entries(imoLocalStorage.imports);
+        overrides.forEach(([key, value]) => {
+          window.localStorage.setItem(`import-map-override:${key}`, value);
+        });
+        const newLocation = new URL(document.location.href);
+        search.delete('imoLocalStorage');
+        newLocation.search = search.toString();
+        window.location.href = newLocation.href;
+      }
+    })();
+  </script>
+  <script type="module">
+    (async () => {
+      const React = await System.import('react');
+      const ReactDOM = await System.import('react-dom');
+      ReactDOM.render(
+        React.createElement('div', null, `React version is: ${React.version}`),
+        document.querySelector('#mount')
+      );
+    })();
+  </script>
+  <script>
+    const hasOverride = Object.keys(localStorage).some(function (item) {
+      return item.startsWith('import-map-override');
+    });
+    if (hasOverride) {
+      importMapOverrides.enableUI();
+    }
+  </script>
+</body>
+
+</html>
