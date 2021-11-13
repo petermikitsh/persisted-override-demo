@@ -26,5 +26,5 @@ Pre-requisites:
 ### Local Development
 
 ```
-npx http-server .
+npx http-server -c-1 .
 ```

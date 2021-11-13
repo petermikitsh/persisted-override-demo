@@ -51,7 +51,7 @@
         overrides.forEach(([key, value]) => {
           const { hostname } = new URL(value);
           /* 🚨 Only permit overrides from trusted hostnames 🚨 */
-          if (hostname === "localhost" || hostname === "petermikitsh.github.io") {
+          if (hostname === "unpkg.com") {
             window.localStorage.setItem(`import-map-override:${key}`, value);
           }
         });
